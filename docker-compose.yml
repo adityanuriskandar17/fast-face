@@ -1,0 +1,43 @@
+services:
+  db:
+    image: pgvector/pgvector:pg18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: fastface
+      POSTGRES_PASSWORD: fastface
+      POSTGRES_DB: fastface
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fastface"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://fastface:fastface@db:5432/fastface
+      FACE_MATCH_THRESHOLD: "0.5"
+      LIVENESS_THRESHOLD: "0.7"
+      # auto = CUDA if a GPU is actually usable, CPU otherwise -- same either way, see
+      # docker-compose.gpu.yml for how to actually pass a GPU through to this container.
+      INSIGHTFACE_PROVIDER: auto
+      INSIGHTFACE_DET_SIZE: "320"
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  db-data:

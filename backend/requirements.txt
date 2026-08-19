@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+sqlalchemy[asyncio]
+asyncpg
+pgvector
+python-multipart
+pydantic-settings
+python-dotenv
+numpy
+opencv-python-headless
+# onnxruntime-gpu also runs CPU-only (falls back automatically) -- swap to plain
+# `onnxruntime` only if you want the smaller download and have no NVIDIA GPU at all.
+onnxruntime-gpu
+insightface
+torch
+torchvision
+pyfacer

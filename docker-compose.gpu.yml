@@ -1,0 +1,15 @@
+
+# Optional override: passes the host's NVIDIA GPU(s) through to the backend container.
+# Requires the NVIDIA driver + nvidia-container-toolkit on the host. Without this file,
+# everything still runs -- just on CPU (see INSIGHTFACE_PROVIDER: auto in docker-compose.yml).
+#
+# Usage: docker compose -f docker-compose.yml -f docker-compose.gpu.yml up --build
+services:
+  backend:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: ["gpu"]
